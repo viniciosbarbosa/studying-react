@@ -10,6 +10,8 @@ function App() {
   const [currentExpenses, setCurrentExpenses] = useState(0); //DespesasAtuais
   const [movementsItens, setMovementsItens] = useState<Array<Movements>>([]); //Movimentacao
 
+  console.log(currentExpenses);
+
   const setNewMoviment = (movement: Movements) => {
     console.log(movement);
 
@@ -36,8 +38,10 @@ function App() {
       console.log(currentBalance);
 
       if (movement.type == "Output") {
+        console.log(movement.value);
+
         setCurrentExpenses(
-          (prevExpenses) => prevExpenses - Number(movement.value)
+          (prevExpenses) => prevExpenses + Number(movement.value)
         );
 
         currentBalance > 0 &&
