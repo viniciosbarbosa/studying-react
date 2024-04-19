@@ -3,8 +3,8 @@ import "./App.css";
 import FinancialControl from "./components/FinancialControl/FinancialControl";
 import Header from "./components/Header/Header";
 import { Movements } from "./models/interfaces/Movement/Movements";
-import Balace from "./components/Balace/Balace";
 import MovementsComponent from "./components/Movements/Movements";
+import { FormatMoney } from "./utils/util";
 
 function App() {
   const [currentBalance, setCurrentBalance] = useState(0); //SaldoAtual
@@ -24,7 +24,7 @@ function App() {
 
         movements.unshift({
           name: movement.name,
-          value: movement.value,
+          value: FormatMoney(movement.value),
           type: movement.type,
           id: Math.random().toString(),
         });

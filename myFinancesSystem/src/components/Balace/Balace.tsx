@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDollar } from "@fortawesome/free-solid-svg-icons";
 import "./Balace.css";
 import Button from "../Button/Button";
+import { FormatMoney } from "../../utils/util";
 
 const Balace = ({ emitMovent, currentBalace }: BalaceProps) => {
   const [renderInputForm, setRenderInputForm] = useState(false);
@@ -60,7 +61,9 @@ const Balace = ({ emitMovent, currentBalace }: BalaceProps) => {
             <h2>Saldo:</h2>
           </header>
 
-          <h3>{currentBalace > 0 ? currentBalace : "R$ 0"}</h3>
+          <h3>
+            {currentBalace > 0 ? FormatMoney(String(currentBalace)) : "R$ 0"}
+          </h3>
 
           {!renderInputForm && (
             <Button
