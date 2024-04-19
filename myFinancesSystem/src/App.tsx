@@ -1,10 +1,13 @@
 import "./App.css";
+import FinancialControl from "./components/FinancialControl/FinancialControl";
+import Header from "./components/Header/Header";
 
 function App() {
   return (
-    <>
-      <h2>Hello React</h2>
-    </>
+    <div>
+      <Header />
+      <FinancialControl />
+    </div>
   );
 }
 
