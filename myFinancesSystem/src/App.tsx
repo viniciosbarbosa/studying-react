@@ -4,21 +4,23 @@ import FinancialControl from "./components/FinancialControl/FinancialControl";
 import Header from "./components/Header/Header";
 import { Movements } from "./models/interfaces/Movement/Movements";
 import Balace from "./components/Balace/Balace";
+import MovementsComponent from "./components/Movements/Movements";
 
 function App() {
   const [currentBalance, setCurrentBalance] = useState(0); //SaldoAtual
   const [currentExpenses, setCurrentExpenses] = useState(0); //DespesasAtuais
   const [movementsItens, setMovementsItens] = useState<Array<Movements>>([]); //Movimentacao
 
-  console.log(currentExpenses);
+  console.log(movementsItens);
+
+  const output = movementsItens.filter((movement) => movement.type == "Output");
+
+  console.log(output);
 
   const setNewMoviment = (movement: Movements) => {
-    console.log(movement);
-
     if (movement) {
       setMovementsItens((prevMovements) => {
         const movements = [...prevMovements];
-        console.log(movements);
 
         movements.unshift({
           name: movement.name,
@@ -35,11 +37,7 @@ function App() {
           (prevBalance) => prevBalance + Number(movement.value)
         );
 
-      console.log(currentBalance);
-
       if (movement.type == "Output") {
-        console.log(movement.value);
-
         setCurrentExpenses(
           (prevExpenses) => prevExpenses + Number(movement.value)
         );
@@ -60,6 +58,8 @@ function App() {
         balance={currentBalance}
         expenses={currentExpenses}
       />
+
+      <MovementsComponent movementsList={movementsItens} />
     </div>
   );
 }
