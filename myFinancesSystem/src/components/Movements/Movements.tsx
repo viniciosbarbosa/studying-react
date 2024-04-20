@@ -3,8 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MovementsProps } from "../../models/interfaces/MovimentsProps/MovimentsProps";
 import { faMoneyBillTransfer } from "@fortawesome/free-solid-svg-icons";
 
-import { FormatMoney } from "./utils/util";
-
 const MovementsComponent = ({ movementsList }: MovementsProps) => {
   return (
     <div>

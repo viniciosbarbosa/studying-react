@@ -1,11 +1,18 @@
-import React, { InputHTMLAttributes, useState } from "react";
+import React, { useState } from "react";
 import { ExpenseProps } from "../../models/interfaces/ExpenseProps/ExpenseProps";
-import "./Expense.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPercent } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button/Button";
 
 import { FormatMoney } from "../../utils/util";
+import {
+  ActionsContainer,
+  Card,
+  CardHeader,
+  Container,
+  FormContainer,
+  FormInput,
+} from "../Balace/Balace";
 
 const Expense = ({
   currentBalance,
@@ -62,12 +69,12 @@ const Expense = ({
 
   return (
     <div>
-      <div className="expense_container">
-        <div className="expense_card">
-          <header className="expense_header">
+      <Container>
+        <Card>
+          <CardHeader>
             <FontAwesomeIcon icon={faPercent} color="#e43f4d" size="2x" />
             <h2>Despesas</h2>
-          </header>
+          </CardHeader>
 
           <h3>
             {currentExpenses > 0
@@ -86,12 +93,8 @@ const Expense = ({
 
           {renderInputForm && (
             <form onSubmit={formSubmitHandler}>
-              <div
-                className={`input_form_container ${
-                  !isFormValid ? "invalid" : ""
-                }`}
-              >
-                <input
+              <FormContainer invalid={!isFormValid}>
+                <FormInput
                   type="text"
                   placeholder="Nome"
                   className="expense_input"
@@ -99,27 +102,27 @@ const Expense = ({
                   onChange={handleInputNameForm}
                 />
 
-                <input
+                <FormInput
                   type="text"
                   placeholder="Valor"
                   className="expense_input"
                   value={inputValue}
                   onChange={handleInputValueForm}
                 />
-              </div>
+              </FormContainer>
 
-              <div className="actions_form_buttons_container">
+              <ActionsContainer>
                 <Button
                   title="Cancelar"
                   priority="Output"
                   action={hideInputForm}
                 />
                 <Button title="Adicionar" type="submit" priority="Input" />
-              </div>
+              </ActionsContainer>
             </form>
           )}
-        </div>
-      </div>
+        </Card>
+      </Container>
     </div>
   );
 };
