@@ -143,7 +143,7 @@ const Balace = ({ emitMovent, currentBalace }: BalaceProps) => {
   };
 
   return (
-    <div>
+    <>
       <Container>
         <Card>
           <CardHeader className="balance_header">
@@ -194,7 +194,7 @@ const Balace = ({ emitMovent, currentBalace }: BalaceProps) => {
           )}
         </Card>
       </Container>
-    </div>
+    </>
   );
 };
 
