@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import LoginImg from "../assets/daniel-korpai-HyTwtsk8XqA-unsplash.jpg";
 
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/FirebaseConection";
+import { toast } from "react-toastify";
+import "react-toastify/ReactToastify.css";
+
 const Login = () => {
   const [displayLogin, setDisplayLogin] = useState(true);
   const [displaySignUp, setDisplaySignUp] = useState(false);
@@ -14,6 +19,8 @@ const Login = () => {
   const [signUpPasswordInput, setSignUpPasswordInput] = useState("");
 
   const [isSignFormValid, setIsSignFormValid] = useState(true);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const errorAlert = (
     <p className="flex justify-center text-red-300">
@@ -37,8 +44,6 @@ const Login = () => {
     setDisplaySignUp(false);
   };
 
-  console.log(!isLoginFormValid);
-
   const handleInputForm = (
     event: React.FormEvent<HTMLInputElement>,
     state: React.Dispatch<React.SetStateAction<string>>
@@ -48,26 +53,45 @@ const Login = () => {
     state(eventeValue);
   };
 
-  const handleExecuteSignUp = (
+  const handleExecuteSignUp = async (
     event: React.MouseEvent<HTMLFormElement, MouseEvent>
   ) => {
+    setIsLoading(true);
     event.preventDefault();
-    loginEmailInput.trim().length > 0 && loginPasswordInput.trim().length > 0
+    signUpEmailInput.trim().length > 0 && signUpPasswordInput.trim().length > 0
       ? setIsSignFormValid(true)
       : setIsSignFormValid(false);
 
-    console.log("dados input", {
-      email: loginEmailInput,
-      password: loginPasswordInput,
-    });
+    console.log(isSignFormValid);
+    await createUserWithEmailAndPassword(
+      auth,
+      signUpEmailInput,
+      signUpPasswordInput
+    )
+      .then((response) => {
+        console.log(response);
 
-    if (
-      loginEmailInput.trim().length > 0 &&
-      loginPasswordInput.trim().length > 0
-    ) {
-      setLoginEmailInput("");
-      setLoginPasswordInput("");
-    }
+        setDisplaySignUp(false);
+        setIsLoading(false);
+        setDisplayLogin(true);
+
+        setSignUpEmailInput("");
+        setSignUpPasswordInput("");
+
+        toast.success("Usuário criado com sucesso!");
+      })
+      .catch((err: { code: string }) => {
+        if (err.code === "auth/weak-password") {
+          toast.error("Senha muito fraca, utilize outra senha!");
+        } else if (err.code === "auth/email-already-in-use") {
+          toast.error("Email já foi cadastrado!");
+        } else {
+          toast.error("Erro ao criar usuário");
+        }
+
+        setIsLoading(false);
+        setIsSignFormValid(false);
+      });
   };
 
   const handleExecuteLogin = (
@@ -193,6 +217,8 @@ const Login = () => {
               />
             </div>
 
+            {isSignFormValid}
+
             <div className="flex flex-col text-white py-2">
               <label>Senha</label>
               <input
@@ -220,10 +246,11 @@ const Login = () => {
             </div>
             {!isSignFormValid && errorAlert}
             <button
+              disabled={isLoading}
               className="w-full my-5 py-2 bg-orange-500 shadow-lg enabled:hover:shadow-orange-500/40 text-white font-semibold disabled:bg-orange-400 disabled:shadow-none enabled:shadow-orange-500/50"
               type="submit"
             >
-              Criar conta
+              {isLoading ? "Carregando.." : "Criar conta"}
             </button>
           </form>
         )}
