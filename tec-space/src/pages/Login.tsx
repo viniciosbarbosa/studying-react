@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import LoginImg from "../assets/daniel-korpai-HyTwtsk8XqA-unsplash.jpg";
 
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+
 import { auth } from "../firebase/FirebaseConection";
 import { toast } from "react-toastify";
 import "react-toastify/ReactToastify.css";
@@ -94,26 +98,37 @@ const Login = () => {
       });
   };
 
-  const handleExecuteLogin = (
+  const handleExecuteLogin = async (
     event: React.MouseEvent<HTMLFormElement, MouseEvent>
   ) => {
+    setIsLoading(true);
     event.preventDefault();
     loginEmailInput.trim().length > 0 && loginPasswordInput.trim().length > 0
       ? setIsLoginFormValid(true)
       : setIsLoginFormValid(false);
 
-    console.log("dados input", {
-      email: loginEmailInput,
-      password: loginPasswordInput,
-    });
+    await signInWithEmailAndPassword(auth, loginEmailInput, loginPasswordInput)
+      .then((response) => {
+        console.log(response);
+        toast.success("Bom vindo de volta !");
+        setDisplayLogin(true);
+        setDisplaySignUp(false);
+        setIsLoading(false);
+      })
+      .catch((err: { code: string }) => {
+        setIsLoading(false);
+        if (err.code === "auth/wrong-password") {
+          toast.error("Senha incorreta!");
+        } else if (err.code === "auth/user-not-found") {
+          toast.error("Email não existe , crie sua conta!");
+        } else {
+          toast.error("Erro ao fazer login!");
+        }
+        setIsLoginFormValid(false);
+      });
 
-    if (
-      loginEmailInput.trim().length > 0 &&
-      loginPasswordInput.trim().length > 0
-    ) {
-      setSignUpEmailInput("");
-      setSignUpPasswordInput("");
-    }
+    setLoginEmailInput("");
+    setLoginPasswordInput("");
   };
 
   return (
@@ -185,10 +200,11 @@ const Login = () => {
             </div>
             {!isLoginFormValid && errorAlert}
             <button
+              disabled={isLoading}
               className="w-full my-5 py-2 bg-orange-500 shadow-lg enabled:hover:shadow-orange-500/40 text-white font-semibold disabled:bg-orange-400 disabled:shadow-none enabled:shadow-orange-500/50"
               type="submit"
             >
-              Fazer login
+              {isLoading ? "Carregando.." : "Fazer Login"}
             </button>
           </form>
         )}
