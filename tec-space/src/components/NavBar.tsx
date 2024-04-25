@@ -4,12 +4,17 @@ import { auth } from "../firebase/FirebaseConection";
 import { useState, useRef, Fragment } from "react";
 import { Transition, Dialog } from "@headlessui/react";
 
+import React from "react";
+
 const NavBar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [isNewPostFormValid, setIsNewPostFormValid] = useState(true);
   const [progress, setProgress] = useState(0);
   const [imgUrl, setImgUrl] = useState("");
+  const [postAuthorInput, setPostAuthorInput] = useState("");
+  const [postTitleInput, setPostTitleInput] = useState("");
+  const [postContentInput, setPostContentInput] = useState("");
   const canceButtonrRef = useRef(null);
 
   const handleSignOut = async () => {
@@ -18,6 +23,18 @@ const NavBar = () => {
         toast.success("Logout Feito com sucesso");
       })
       .catch(() => toast.error("Ocorreu um erro tente novamente!"));
+  };
+
+  console.log(postAuthorInput, postTitleInput, postContentInput);
+
+  const handleInputForm = (
+    event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
+    state: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    const eventTarget = event.currentTarget as HTMLInputElement;
+    const eventValue = eventTarget.value;
+
+    state(eventValue);
   };
 
   return (
@@ -112,6 +129,10 @@ const NavBar = () => {
                       <div className="flex flex-col text-start text-white py-2">
                         <label>Autor</label>
                         <input
+                          value={postAuthorInput}
+                          onChange={(event) =>
+                            handleInputForm(event, setPostAuthorInput)
+                          }
                           type="text"
                           placeholder="Digite o seu nome"
                           className={`w-full rounded-lg mt-2 p-2 ${
@@ -125,6 +146,10 @@ const NavBar = () => {
                       <div className="flex flex-col text-start text-white py-2">
                         <label>Título</label>
                         <input
+                          value={postTitleInput}
+                          onChange={(event) =>
+                            handleInputForm(event, setPostTitleInput)
+                          }
                           type="text"
                           placeholder="Digite o título"
                           className={`w-full rounded-lg mt-2 p-2 ${
@@ -138,6 +163,10 @@ const NavBar = () => {
                       <div className="flex flex-col text-start text-white py-2">
                         <label>Conteúdo</label>
                         <textarea
+                          value={postContentInput}
+                          onChange={(event) =>
+                            handleInputForm(event, setPostContentInput)
+                          }
                           placeholder="Digite o conteúdo"
                           className={`w-full rounded-lg mt-2 p-2 ${
                             isNewPostFormValid
