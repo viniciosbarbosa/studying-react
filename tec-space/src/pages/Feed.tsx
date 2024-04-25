@@ -1,7 +1,9 @@
+import NavBar from "../components/NavBar";
+
 const Feed = () => {
   return (
     <>
-      <h3>Hello to feed page</h3>
+      <NavBar />
     </>
   );
 };
