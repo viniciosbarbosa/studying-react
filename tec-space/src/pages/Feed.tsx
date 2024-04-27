@@ -4,6 +4,7 @@ import { Post } from "../models/interfaces/Post";
 import { DocumentData, collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/FirebaseConection";
 import { ColletionsFirebase } from "../models/enums/ColletionsFirebase";
+import Posts from "../components/Posts";
 
 const Feed = () => {
   const [postList, setPostList] = useState<Array<Post>>([]);
@@ -31,7 +32,8 @@ const Feed = () => {
 
   return (
     <>
-      <NavBar />
+      <NavBar handleGetPosts={handleGetPost} />
+      <Posts posts={postList} />
     </>
   );
 };

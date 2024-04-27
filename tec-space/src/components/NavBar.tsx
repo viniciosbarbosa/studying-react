@@ -9,7 +9,7 @@ import { addDoc, collection } from "firebase/firestore";
 import UserEmailContext from "../context/UserEmail";
 import { ColletionsFirebase } from "../models/enums/ColletionsFirebase";
 
-function Navbar() {
+function Navbar({ handleGetPosts }: { handleGetPosts: () => void }) {
   const [isLoading, setIsLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [isNewPostFormValid, setIsNewPostFormValid] = useState(true);
@@ -94,6 +94,7 @@ function Navbar() {
                 )
                   .then(() => {
                     handleCloseModal();
+                    handleGetPosts();
                     toast.success("Post criado com sucesso!");
                   })
                   .catch(() => {
