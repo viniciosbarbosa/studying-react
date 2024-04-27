@@ -1,13 +1,14 @@
-import { signOut } from "firebase/auth";
-import { toast } from "react-toastify";
-import { auth, storage } from "../firebase/FirebaseConection";
-import { useState, useRef, Fragment } from "react";
+import React, { useState, useRef, Fragment, useContext } from "react";
 import { Transition, Dialog } from "@headlessui/react";
+import { toast } from "react-toastify";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { signOut } from "firebase/auth";
+import { auth, db, storage } from "../firebase/FirebaseConection";
+import { Post } from "../models/interfaces/Post";
+import { addDoc, collection } from "firebase/firestore";
+import UserEmailContext from "../context/UserEmail";
 
-import React from "react";
-
-const NavBar = () => {
+function Navbar() {
   const [isLoading, setIsLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [isNewPostFormValid, setIsNewPostFormValid] = useState(true);
@@ -17,17 +18,16 @@ const NavBar = () => {
   const [postTitleInput, setPostTitleInput] = useState("");
   const [postContentInput, setPostContentInput] = useState("");
   const [postImgFile, setPostImgFile] = useState<File | null>(null);
-  const canceButtonrRef = useRef(null);
+  const cancelButtonRef = useRef(null);
+  const { email } = useContext(UserEmailContext);
+
+  console.log(email);
 
   const handleSignOut = async () => {
     await signOut(auth)
-      .then(() => {
-        toast.success("Logout Feito com sucesso");
-      })
-      .catch(() => toast.error("Ocorreu um erro tente novamente!"));
+      .then(() => toast.success("Logout feito com sucesso!"))
+      .catch(() => toast.error("Ocorreu um erro, tente novamente!"));
   };
-
-  console.log(postAuthorInput, postTitleInput, postContentInput);
 
   const handleInputForm = (
     event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -36,7 +36,8 @@ const NavBar = () => {
     const eventTarget = event.currentTarget as HTMLInputElement;
     const eventValue = eventTarget.value;
 
-    state(eventValue);
+    eventValue && state(eventValue);
+    console.log(eventValue);
   };
 
   const handlePostImageInput = (event: React.FormEvent<HTMLInputElement>) => {
@@ -44,7 +45,6 @@ const NavBar = () => {
     const file: File | null = eventTarget.files && eventTarget.files[0];
 
     setPostImgFile(file);
-    console.log(file);
   };
 
   const handleCreateNewPost = (event: React.FormEvent<HTMLFormElement>) => {
@@ -64,44 +64,84 @@ const NavBar = () => {
     if (!postImgFile) return;
 
     const storageRef = ref(storage, `images/${postImgFile.name}`);
-
     const uploadTask = uploadBytesResumable(storageRef, postImgFile);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setProgress(progress);
+      },
+      () => {
+        toast.error("Ocorreu um erro!");
+      },
+      async () => {
+        void (await getDownloadURL(uploadTask.snapshot.ref)
+          .then(async (url) => {
+            if (url) {
+              setImgUrl(url);
+              const currentDate = getCurrentDate();
+              const postObject: Post = {
+                author: postAuthorInput,
+                title: postTitleInput,
+                content: postContentInput,
+                imagemUrl: url,
+                userEmail: email,
+                creationDate: currentDate,
+              };
+
+              await addDoc(collection(db, "posts"), postObject)
+                .then(() => {
+                  setIsLoading(false);
+                  setPostTitleInput("");
+                  setPostContentInput("");
+                  setPostAuthorInput("");
+                  setImgUrl("");
+                  setProgress(0);
+                  setIsNewPostFormValid(true);
+                  setOpenModal(false);
+                  toast.success("Post criado com sucesso!");
+                })
+                .catch(() => {
+                  setIsLoading(false);
+                  setPostTitleInput("");
+                  setPostContentInput("");
+                  setPostAuthorInput("");
+                  setImgUrl("");
+                  setProgress(0);
+                  setOpenModal(false);
+                  toast.error("Erro ao criar o post, tente novamente!");
+                });
+            }
+            // Buscar os posts para exibir atualizado na tela de posts
+          })
+          .catch(() => {
+            setIsLoading(false);
+            toast.error("Erro ao fazer upload da imagem");
+          }));
+      }
+    );
+
+    setIsLoading(false);
+  };
+
+  const getCurrentDate = (): string => {
+    const date = new Date();
+
+    const currentDay = String(date.getDate()).padStart(2, "0");
+    const currentMonth = String(date.getMonth() + 1).padStart(2, "0");
+    const currentYear = date.getFullYear();
+    return `${currentDay}/${currentMonth}/${currentYear}`;
   };
 
   return (
     <>
-      {/*NAVBAR */}
+      {/* NAVBAR */}
       <div className="w-full mx-auto flex flex-wrap gap-5 p-5 flex-col md:flex-row items-center bg-purple-600">
         <button
+          type="button"
           onClick={handleSignOut}
-          type="button"
-          className="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 border-0 mt-4 md:mt-0"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6 mr-2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m21 7.5-2.25-1.313M21 7.5v2.25m0-2.25-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3 2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75 2.25-1.313M12 21.75V19.5m0 2.25-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25"
-            />
-          </svg>
-          Sair
-        </button>
-
-        <div className="md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center">
-          <h1 className="text-4xl text-orange-500 font-mono">Tech Space</h1>
-        </div>
-
-        <button
-          onClick={() => setOpenModal(!openModal)}
-          type="button"
-          className="inline-flex items-center rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline-none focus-visible:outline-offset-2 focus-visible:outline-orange-600 border-0 mt-4 md:mt-0"
+          className="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-red-600 border-0 mt-4 md:mt-0"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -114,19 +154,45 @@ const NavBar = () => {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+              d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
             />
           </svg>
-          Criar Post
+          Sair
+        </button>
+
+        <div className="md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center">
+          <h1 className="text-4xl text-orange-500 font-mono">Tech Space</h1>
+        </div>
+
+        <button
+          onClick={() => setOpenModal(!openModal)}
+          type="button"
+          className="inline-flex items-center rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 border-0 mt-4 md:mt-0"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="w-6 h-6 mr-2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Criar post
         </button>
       </div>
 
-      {/*MODAL DE CRIAR POSTS */}
+      {/* MODAL DE CRIAR POSTS */}
       <Transition.Root show={openModal} as={Fragment}>
         <Dialog
           as="div"
-          className="relativo z-10"
-          initialFocus={canceButtonrRef}
+          className="relative z-10"
+          initialFocus={cancelButtonRef}
           onClose={setOpenModal}
         >
           <Transition.Child
@@ -138,8 +204,9 @@ const NavBar = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="flex flex-col justify-center h-min"></div>
+            <div className="fixed inset-0 bg-purple-700 bg-opacity-75 transition-opacity" />
           </Transition.Child>
+
           <div className="fixed inset-0 z-10 overflow-y-auto">
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
@@ -155,15 +222,15 @@ const NavBar = () => {
                   <div className="flex flex-col justify-center h-min">
                     <form
                       onSubmit={handleCreateNewPost}
-                      className="max-w-[400px] max-h-[350px] overflow-auto w-full mx-auto bg-purple-600 p-8 px-8 rounded-lg mt-10"
+                      className="max-w-[400px] w-full mx-auto bg-purple-600 p-8 px-8 rounded-lg"
                     >
                       <h2 className="text-3xl mb-5 dark:text-white font-bold text-center">
                         Criar Post
                       </h2>
+
                       <div className="flex flex-col text-start text-white py-2">
                         <label>Autor</label>
                         <input
-                          value={postAuthorInput}
                           onChange={(event) =>
                             handleInputForm(event, setPostAuthorInput)
                           }
@@ -180,7 +247,6 @@ const NavBar = () => {
                       <div className="flex flex-col text-start text-white py-2">
                         <label>Título</label>
                         <input
-                          value={postTitleInput}
                           onChange={(event) =>
                             handleInputForm(event, setPostTitleInput)
                           }
@@ -197,7 +263,6 @@ const NavBar = () => {
                       <div className="flex flex-col text-start text-white py-2">
                         <label>Conteúdo</label>
                         <textarea
-                          value={postContentInput}
                           onChange={(event) =>
                             handleInputForm(event, setPostContentInput)
                           }
@@ -213,8 +278,8 @@ const NavBar = () => {
                       <div className="flex flex-col text-start text-white py-2">
                         <label>Capa</label>
                         <input
-                          type="file"
                           onChange={handlePostImageInput}
+                          type="file"
                           placeholder="Digite o conteúdo"
                           className="w-full cursor-pointer rounded-lg mt-2 p-2 bg-purple-700 focus:bg-purple-800 border-2 border-purple-800 focus:border-orange-700 focus:outline-none focus:placeholder-transparent"
                         />
@@ -237,9 +302,8 @@ const NavBar = () => {
                         type="submit"
                         className="w-full my-5 py-2 bg-orange-500 shadow-lg  enabled:hover:shadow-orange-500/40 text-white font-semibold rounded-lg disabled:bg-orange-400 disabled:shadow-none enabled:shadow-orange-500/50"
                       >
-                        {isLoading ? "Criando Post" : "Criar"}
+                        {isLoading ? "Criando post..." : "Criar"}
                       </button>
-
                       <button
                         onClick={() => setOpenModal(false)}
                         disabled={isLoading}
@@ -258,6 +322,6 @@ const NavBar = () => {
       </Transition.Root>
     </>
   );
-};
+}
 
-export default NavBar;
+export default Navbar;
