@@ -7,6 +7,7 @@ import { auth, db, storage } from "../firebase/FirebaseConection";
 import { Post } from "../models/interfaces/Post";
 import { addDoc, collection } from "firebase/firestore";
 import UserEmailContext from "../context/UserEmail";
+import { ColletionsFirebase } from "../models/enums/ColletionsFirebase";
 
 function Navbar() {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,8 +21,6 @@ function Navbar() {
   const [postImgFile, setPostImgFile] = useState<File | null>(null);
   const cancelButtonRef = useRef(null);
   const { email } = useContext(UserEmailContext);
-
-  console.log(email);
 
   const handleSignOut = async (): Promise<void> => {
     await signOut(auth)
@@ -89,7 +88,10 @@ function Navbar() {
                   creationDate: currentDate,
                 };
 
-                await addDoc(collection(db, "posts"), postObject)
+                await addDoc(
+                  collection(db, ColletionsFirebase.POSTS),
+                  postObject
+                )
                   .then(() => {
                     handleCloseModal();
                     toast.success("Post criado com sucesso!");
