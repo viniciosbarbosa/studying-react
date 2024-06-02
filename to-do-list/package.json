@@ -10,11 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@types/crypto-js": "^4.2.2",
-    "crypto": "^1.0.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "vite-plugin-svgr": "^4.2.0"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
