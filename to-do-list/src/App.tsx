@@ -1,6 +1,7 @@
 import { Header } from "./components/Header";
 import { UseSaveTodos } from "./hooks/UseSaveTodos";
 import styles from "./App.module.css";
+import { Todolist } from "./components/TodoList";
 
 function App() {
   UseSaveTodos();
@@ -10,6 +11,10 @@ function App() {
       <header>
         <Header />
       </header>
+
+      <main>
+        <Todolist />
+      </main>
     </div>
   );
 }
