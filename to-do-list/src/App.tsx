@@ -1,7 +1,9 @@
 import "./App.css";
-import React from "react";
+import { UseSaveTodos } from "./hooks/UseSaveTodos";
 
 function App() {
+  UseSaveTodos();
+
   return <p>oi</p>;
 }
 
