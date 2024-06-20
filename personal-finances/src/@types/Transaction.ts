@@ -1,17 +1,17 @@
-export type TransactionStatus = "Pending" | "Completed";
+export type TransactionStatus = "pending" | "completed";
 
 export type Transaction = {
   id: number;
   title: string;
   status: TransactionStatus;
   amount: number;
-  createdAt: number;
+  created_at: number;
   user_id: number;
 };
 
 export type TransactionDashboard = Omit<
   Transaction,
-  "id" | "title" | "stauts" | "used_id"
+  "id" | "title" | "status" | "user_id"
 >;
 
 export type ApiGetTransactions = {
@@ -23,7 +23,7 @@ export type ApiGetTransactions = {
     offset: number;
     itemsTotal: number;
     pageTotal: number;
-    items: Array<Transaction>;
+    items: Transaction[];
   };
 };
 
@@ -32,7 +32,7 @@ export type ApiGetTransaction = {
 };
 
 export type ApiGetDashboard = {
-  transactions: Array<TransactionDashboard>;
+  transactions: TransactionDashboard[];
   pending_transactions: number;
   completed_transactions: number;
 };
