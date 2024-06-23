@@ -4,7 +4,7 @@ import { User } from "../../@types/Auth";
 interface AuthState {
   user: User | null;
   authToken: string | null;
-  authStatus: "authencticated" | "authencticated" | "not_verified";
+  authStatus: "authenticated" | "not_authenticated" | "not_verified";
 }
 
 const initalState: AuthState = {
