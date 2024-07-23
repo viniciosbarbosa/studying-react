@@ -2,10 +2,11 @@ import styled from "styled-components";
 import { Link as LinkRouter } from "react-router-dom";
 
 export const Wrapper = styled.div`
-  background-color: ${(props) => props.theme.backgroundColor};
+  background-color: ${(props) => props.theme.COLORS.background};
   min-height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: center;
 `;
 
 export const Container = styled.div`
@@ -15,18 +16,19 @@ export const Container = styled.div`
   justify-content: center;
   gap: 20px;
   width: 420px;
+  border: 1px solid ${(props) => props.theme.COLORS.borderColor};
+  box-shadow: 0px 3px 7px -6px ${(props) => props.theme.COLORS.borderColor};
+  padding: 30px;
 `;
 
 export const Card = styled.div`
   width: 100%;
-  border: 1px solid ${(props) => props.theme.COLORS.borderColor};
-  padding: 30ppx;
-  box-shadow: black 0px 3px 7px -6px;
   display: flex;
   align-items: center;
   flex-direction: column;
   gap: 30px;
   box-sizing: border-box;
+  background-color: ${(props) => props.theme.COLORS.white};
 `;
 
 export const CardHeader = styled.div`

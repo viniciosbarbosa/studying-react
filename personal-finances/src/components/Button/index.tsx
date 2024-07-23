@@ -1,4 +1,5 @@
 import { ButtonElement } from "./styles";
+import React from "react";
 
 type Props = {
   children: React.ReactNode;
@@ -15,12 +16,14 @@ export const Button = ({
   borderRadius = "sm",
   width = "100%",
 }: Props) => {
-  <ButtonElement
-    onClick={onClick}
-    $size={size}
-    $borderRadius={borderRadius}
-    $width={width}
-  >
-    {children}
-  </ButtonElement>;
+  return (
+    <ButtonElement
+      onClick={onClick}
+      $size={size}
+      $borderRadius={borderRadius}
+      $width={width}
+    >
+      {children}
+    </ButtonElement>
+  );
 };

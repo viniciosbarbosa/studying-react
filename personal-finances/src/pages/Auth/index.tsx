@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/auth";
 import { useNavigate } from "react-router-dom";
-import { SiTruenas } from "react-icons/si";
 import {
-  Card,
   CardBody,
   CardFooter,
   CardHeader,
@@ -121,7 +119,7 @@ export const Auth = ({ type }: Props) => {
             {type == "signin" ? (
               <Link to="/signup">Nao tem conta ? Se registre</Link>
             ) : (
-              <Link to="/signin">Ja conta ? Entrar</Link>
+              <Link to="/signin">Ja tem conta ? Entrar</Link>
             )}
           </CardFooter>
         </Container>
