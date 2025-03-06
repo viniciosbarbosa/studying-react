@@ -1,15 +1,10 @@
 import "./App.css";
-import { TodoContextProvider } from "./contexts/TodoContext";
 import { useSaveTodos } from "./hooks/useSaveTodos";
 
 function App() {
   useSaveTodos();
 
-  return (
-    <div>
-      <TodoContextProvider></TodoContextProvider>
-    </div>
-  );
+  return <div></div>;
 }
 
 export default App;
