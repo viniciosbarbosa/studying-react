@@ -1,0 +1,23 @@
+.container,
+.container input {
+  width: 100%;
+}
+
+.container input {
+  background: var(--gray500);
+  outline: none;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  color: var(--gray100);
+  transition: all 0.3s;
+  padding: 0.875rem;
+}
+
+.container input::placeholder {
+  color: var(--gray300);
+}
+
+.container input:focus {
+  border-color: (var(--purpleDark));
+}
