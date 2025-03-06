@@ -21,7 +21,7 @@ export const Header = () => {
   return (
     <div className={styles.container}>
       <div className={styles.brandContainer}>
-        <img src="../../../public/brand.svg" alt="VINI LISTs" />
+        <img src="../../../public/brand.svg" alt="VINI LISTS" />
       </div>
 
       <div className={styles.newTaskContainer}>
