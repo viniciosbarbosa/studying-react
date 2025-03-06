@@ -1,5 +1,5 @@
-import { TodoActions, TodoState } from "./../../types/TodoReducer";
-export const initalState: TodoState = [];
+import { TodoActions, TodoState } from "../../../types/TodoReducer";
+export const InitalState: TodoState = [];
 
 export const TodoReducer = (
   state: TodoState,
