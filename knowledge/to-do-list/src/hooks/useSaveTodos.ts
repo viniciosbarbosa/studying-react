@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { TodoContext } from "../contexts/TodoContext";
-const SECRET_KEY = import.meta.env.VITE_SECRENT_KEY as string;
+const SECRET_KEY = import.meta.env.VITE_SECRET_KEY as string;
 const LOCAL_STORAGE_KEY = "TODOS_DATA";
 import { AES, enc } from "crypto-js";
 import { Todo } from "../../types/Todo";
@@ -20,13 +20,14 @@ export const useSaveTodos = () => {
 
   //Pegando dados inicias
   useEffect(() => {
+    console.log("SECRET_KEY:", SECRET_KEY);
     try {
       const todoData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      console.log(todoData);
+
       if (todoData) {
         const bytes = AES.decrypt(todoData, SECRET_KEY);
-        console.log(
-          `Dados Brutos${bytes} , Dados JSONPARSE${JSON.parse(bytes.toString())} Dados final${JSON.parse(bytes.toString(enc.Utf8))} `
-        );
+        console.log(bytes);
 
         const decryptedData: Todo[] = JSON.parse(bytes.toString(enc.Utf8));
         dispatch({ type: "ADD", payload: decryptedData });

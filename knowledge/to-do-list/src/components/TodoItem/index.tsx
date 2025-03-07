@@ -13,6 +13,7 @@ export const TodoItem = ({ data, dataIndex }: Props) => {
   const { dispatch } = useContext(TodoContext);
 
   const handleToggleIsDoneTodo = (ev: ChangeEvent<HTMLInputElement>) => {
+    console.log("data.isDone:", data.isDone);
     dispatch({
       type: "CHANGE",
       payload: { index: dataIndex, isDone: ev.target.checked },
@@ -34,14 +35,15 @@ export const TodoItem = ({ data, dataIndex }: Props) => {
       </div>
 
       <div
-        className={`${styles.taskTitleContainer}${data.isDone ? styles.taskDoneTitleContainer : ""}`}
+        className={`${styles.taskTitleContainer}
+        ${data.isDone && styles.taskDoneTitleContainer}`}
       >
         {data.title}
       </div>
 
       <div className={styles.deleteTaskContainer}>
         <button className={styles.deleteTaskBtn} onClick={handleDeleteTodo}>
-          Deletar <TrashIcon />
+          <TrashIcon />
         </button>
       </div>
     </div>
