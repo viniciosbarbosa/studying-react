@@ -16,9 +16,9 @@ const App = () => {
   }, []);
 
   return (
-    <ThemeProvider
-      theme={theme == "light" ? lightTheme : darkTheme}
-    ></ThemeProvider>
+    <ThemeProvider theme={theme == "light" ? lightTheme : darkTheme}>
+      oiiii
+    </ThemeProvider>
   );
 };
 
