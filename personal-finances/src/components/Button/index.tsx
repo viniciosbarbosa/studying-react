@@ -5,7 +5,7 @@ type Props = {
   children: ReactNode;
   onClick?: () => void;
   size: "sm" | "md";
-  borderRadius: "sm" | "md" | "rounded";
+  borderRadius?: "sm" | "md" | "rounded";
   width?: string;
 };
 
